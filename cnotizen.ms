@@ -39,7 +39,16 @@ In Header Dateien werden Variablen ganz normal definiert, in der Quelldatei muss
 Konstanten werden mit constexpr const [datentyp] [Konstantenname] = [Wert]; in der Header Datei definiert und mit extern const [datentyp] [Konstantenname]; in der Quelldatei deklariert und importiert. constexpr gibt es aber nur in C++, extern funktioniert aber in C wie auch C++.
 Der Sinn von constexpr ist eine Konstante zu haben, die wirklich nicht geändert werden kann, im Gegensatz zu einer const. Dies sorgt dafür, dass der Compiler schon beim Compilieren weiß, dass sich diese Konstante auch nicht ändern wird. Es funktioniert auch als Sicherung.
 .NH 2
-Macro Definition
+Lokale Variablen und Funktionen
+.cs
+static int x = 2; //die Variable ist lokal und kann nur in ihrer Funktion bzw Quelldatei verwendet werden
+.br
+static int foo(); //die Funktion kann nicht von anderen Quelldateien außer der eigenen verwendet werden
+.ce
+.NH 2
+Makro Definition
+.LP
+Makros sind die wahren Konstanten, die nicht geändert werden können, denn const Variablen sind nur begrenzt schreibgeschützt und können je nach Compiler mit Pointern geändert werden.
 .cs
 #define pi 3.14
 .br
@@ -102,7 +111,7 @@ Modulo
 Pointer
 .LP
 .cs
-int *p = &a; //Pointer p zur Adresse von a
+int *p = &a; //Pointer p zur Adresse von int a
 .br
 *p; //gibt den Wert aus, auf den p hinzeigt
 .br
@@ -150,6 +159,52 @@ using [alias] = [datentyp];
 [alias] foo = 2;
 .ce
 .NH
+Enums/Aufzählungen
+.LP
+Enummerations/Aufzählungen bzw enums sind selbst geschriebene Datentypen, dessen Werte programmintern nur eine Aufzählung der Werte in ihrer Reihenfolge darstellt.
+.cs
+//in C (einfache Version)
+.br
+typedef enum { sternjaeger, transportschiff } Raumschiff; //komfortable Deklarierung
+.br
+Raumschiff raumschifftyp = transportschiff; //transportschiff gibt 2 aus
+.br
+//in C (ohne typedef)
+.br
+enum Raumschiff { sternjaeger, transportschiff };
+.br
+enum Raumschiff raumschifftyp = transportschiff; //hier wird enum bei der Deklaration gebraucht
+.br
+//in C++
+.br
+enum class Raumschiff { sternjaeger, transportschiff };
+.br
+Raumschiff raumschifftyp = Raumschiff::transportschiff;
+.ce
+.NH
+Random
+.cs
+#in C
+.br
+#include <time.h>
+.br
+#include <stdlib.h>
+.br
+srand(time(NULL)); //generiert einen "zufälligen" Seed für rand
+.br
+int r = rand % 30 +1; //generiert Zahl zwischen 0+1 und 29+1
+.br
+#in C++
+.br
+#include <random>
+.br
+std::random_device rd; //generiert eine zufällige Zahl zwischen rd.min() und rd.max()
+.br
+std::uniform_int_distribution<int> verteilung(0,1000); //erzwingt die Verteilung auf Werte zwischen 0 und 1000
+.br
+int zufallszahl = verteilung(rd); //generiert Zahl von 0 bis 1000
+.ce
+.NH
 Goto
 .cs
 for(int i = 0; i < 20; i++) {
@@ -164,6 +219,46 @@ if(i == 4 && s == 48) goto Labelname; //ist sehr praktisch, um schnell und einfa
 .br
 Labelname:                                                                           //springt direkt in diese Zeile und beendet die Schleifen
 .ce
+.NH
+Input und Output
+.cs
+#in C
+.br
+#include <stdio.h>
+.br
+int main() {
+.br
+int a; scanf(%d,&a); //Wert der Eingabe wird an die Adresse von a geschickt
+.br
+printf("%d\n",a); //a wird in der Konsole ausgegeben
+.br
+return 0;
+.br
+}
+.br
+#in C++
+.br
+#include <iostream>
+.br
+#include <string>
+.br
+int main() {
+.br
+int a; std::cin >> a; //a wird dem Wert der Eingabe zugewiesen
+.br
+std::string c,s; std::getline(std::cin,c); std::cin.get(s); //speichert ganze Eingabezeile ab statt Leerzeichen zu überspringen
+.br
+std::cout << std::to_string(a) <<" " << c << " " << s << std::endl; //gibt alles wieder in einer Zeile aus. Integer müssen zu strings konvertiert werden
+std::cerr << "Fehlermeldung" << std::endl; //Fehlermeldung im Fehlerkanal und nicht im normalen Ausgabekanal!
+.br
+return 0;
+.br
+}
+.ce
+.NH 2
+Bemerkungen
+.LP
+Bei printf bedeutet %s->string, %d -> Variable, %p -> Pointer, %c -> Character.
 .NH
 Compilation
 .LP
@@ -235,6 +330,139 @@ memcpy -> fügt direkt in den neuen Speicherpointer ein, keine Zuweisung ist erf
 .br
 realloc -> vereint in sich malloc, memcpy und free in einem
 .NH
+Grundlegende Programmstrukturen
+.NH 2
+if
+.cs
+if (!Bedingung && Bedingung || Bedingung) {
+.br
+ ...
+.br
+}
+.ce
+.NH 3
+Auswahloperator
+.cs
+int a = 5 > 1 ? 23 : 1; //das selbe wie int a; if(5 >1) a= 23; else a = 1;
+.ce
+.NH 2
+switch
+.cs
+switch(a) {
+.br
+case 1:
+.br
+ ...
+.br
+break;
+.br
+case 2:
+.br
+ ...
+.br
+break;
+.br
+default:
+.br
+ ...
+}
+.ce
+.NH 2
+While
+.cs
+while (Bedingung) {
+.br
+ ...
+.br
+}
+.ce
+.NH 3
+do-while
+.cs
+do {
+.br
+ ...
+.br
+} while(Bedingung);
+.ce
+.NH 2
+for-Schleife
+.cs
+for(int i = 0: i < 20; ++i) {
+.br
+ ...
+.br
+}
+.ce
+.NH 3
+Direkter Zugriff auf alle Arrayelemente (geht nur in C++)
+.cs
+for(auto i : array) {
+.br
+ ...
+}
+.ce
+.NH 2
+Funktionen
+.cs
+int foo(int a) { // [datentyp] funktionsname([datentyp] a) { (als Datentyp kann man auch eine selbst definierte Klasse oder struct nehmen)
+.br
+ ...
+.br
+return [int-Wert]; // [datentyp] wird zurückgegeben (void braucht das nicht)
+.br
+}
+.br
+foo(5); // Funktionsaufruf
+.ce
+.NH 3
+Funktionspointer
+.cs
+int add(int n, int m) { return n+m; } //Funktionsdefinition
+.br
+int (*pointerzuadd)(int,int); // [Rückgabetyp (void bei void Funktionen)] [*funktionspointer] [funktionsparametertypen]; bzw der Funktionspointer wird erzeugt
+.br
+pointerzuadd = &add; //Pointer wird Funktion zugeordnet
+.br
+int sum = (*pointerzuadd)(2,3); //Aufruf
+.ce
+.NH 3
+Übergabe per Referenz in Funktionen (nur in C++)
+.cs
+int add(int& c) { ... }; //in C++ wird so die Variable komplett übergeben statt wie in C erst einmal die Variablenadresse einem Pointer zu übergeben
+.ce
+.NH 3
+Überladung von Funktionen
+.cs
+int quadrat(int i) {
+.br
+return i*i;
+.br
+}
+.br
+double quadrat(double i) {
+.br
+return i*i;
+.br
+}
+.LP
+Nun ist quadrat() überladen und je nach dem welchen Datentyp quadrat() übermittelt, wird eine andere Funktion aufgerufen.
+.cs
+quadrat(2);   //   -> ruft int Funktion auf
+.br
+quadrat(2.0); //   -> ruft jedoch double Funktion auf
+.ce
+.ce
+.NH 3
+Lambdas
+.LP
+Aufbau einer Lambda Funktion: [Liste aus Variablen, die aus der Quelldatei importiert werden] (Parameter für die Funktion, die beim Aufruf festgelegt werden) -> [datentyp, der ausgeworfen wird] { ... };
+.cs
+int r = 2; auto wo = [r](int a) -> int {return a*r;}; //wo ist ein Lambda Datentyp
+.br
+wo(3); // Lambda-Funktionsausruf, gibt 6 aus
+.ce
+.NH
 Zusammengesetzte Datentypen
 .NH 2
 Arrays
@@ -259,8 +487,9 @@ Deklaration und Definition	int feld[{Arraygröße}] = {2,3 };	array<int,2> feld 
 zweidimensional	int cord[][] = { {2,4}, {5,6}};	array<array<int,2>,2> cord {{ 2,4}}, {{5,6}} }};
 gibt 3 aus	feld[1];	feld.at(1);
 gibt 5 aus	cord[1][0];	cord[1].at(0);
-Arraygröße	sizeof(feld)/sizeof(*feld)	feld.size()
-Array vergleichen	memcmp(feld1,feld2, sizeof(feld1));	std::equal)
+Arraygröße	sizeof(feld)/sizeof(*feld);	feld.size();
+Arrayiteratoren	N/A	feld.begin() oder feld.end()
+Array vergleichen	memcmp(feld1,feld2, sizeof(feld1));	std::equal
 .TE
 .NH 2
 Bemerkungen
