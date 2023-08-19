@@ -12,7 +12,7 @@ Kurzanleitung zu C/C++
 .NH
 Datentypen
 .LP
-int, float, bool, char, size_t, double, long double. Diese können signed, unsigned und const sein. unsigned int ist das selbe wie size_t. (size_t muss jedoch mit stddef.h oder cstddef inkludiert werden. Bei letzterem ist std::size_t von Nöten.)
+int, float, bool, char, size_t, double. Diese können signed, unsigned, short, long und const sein. unsigned int ist das selbe wie size_t. (size_t muss jedoch mit stddef.h oder cstddef inkludiert werden. Bei letzterem ist std::size_t von Nöten.)
 .NH
 Präprozessor
 .LP
@@ -41,10 +41,14 @@ Der Sinn von constexpr ist eine Konstante zu haben, die wirklich nicht geändert
 .NH 2
 Lokale Variablen und Funktionen
 .cs
-static int x = 2; //die Variable ist lokal und kann nur in ihrer Funktion bzw Quelldatei verwendet werden
+static int x = 2; //die Variable ist lokal und kann nur in ihrer Funktion bzw Quelldatei verwendet werden.
 .br
 static int foo(); //die Funktion kann nicht von anderen Quelldateien außer der eigenen verwendet werden
 .ce
+.LP
+Des Weiteren behält x seinen Wert bei, auch nachdem man ihren Block verlassen hat, weswegen ein ++x; später mehr als 3 sein kann.
+.LP
+Das Gegenteil von static ist auto, was der Compiler standardmäßig jeder Variable zuordnet. Wenn der Funktionsblock verlassen wird, wird auch der Wert von auto x = 2; gelöscht.
 .NH 2
 Makro Definition
 .LP
@@ -122,6 +126,47 @@ Dieser string Pointer ist ein Char-Pointer, der auf einen Char-array deutet.
 int * const pointer; //Dies wäre ein konstanter Pointer auf einen Integer. Ergo der Pointer ist unveränderbar und nicht sein Wert wie beim string oben (man liest die Deklarierung von rechts nach links)
 .ce
 In C++ gibt es des Weiteren noch den nullptr, was man Pointer zuweisen kann, die auf nichts zeigen sollen. (In C würde man NULL oder 0 verwenden)
+.NH 2
+Referenzen (nur bei C++)
+.cs
+int x = 24;
+.br
+int& ref = x; //eine Referenz agiert wie eine normale Variable, statt einem Pointer gleich, kann aber nie NULL sein
+.br
+std::cout << ++ref<<"\\n";  //gibt 25 aus
+.ce
+.NH 2
+Smart Pointer (nur bei C++)
+.LP
+Smart Pointer haben den großen Vorteil zu rohen Pointern, die manuell mit new erzeugt wurden, dass sie automatisch nach ihrer Laufzeit gelöscht werden und es so zu keinen Memoryleaks kommen kann. (normale rohe Pointer werden aber nach ihrer Laufzeit gelöscht, wie alle anderen Variablen auch. new braucht nämlich immer ein delete, sonst gibts einen Memoryleak (bei malloc ist es genauso))
+.br
+Smart Pointer funktionieren nach dem RAII-Prinzip = "Resource Acquisition Is Initialization". Das heißt, dass der Konstruktor eines Objekts ihm Speicher zuweist und sein Destruktur diesen zugewiesenen Speicher später befreit.
+.NH 3
+Shared Pointer
+.cs
+#include <memory>
+.br
+std::shared_ptr<int> ptr = make_shared<int>(42); //ptr zeigt auf 42
+.br
+(*ptr)++;  //nun auf 43
+.br
+auto ptr2 = ptr; //ptr2 zeigt auf den selben Wert wie ptr
+.br
+ptr.use_count(); //ptr weiß, dass es einen weiteren shared Pointer gibt, der auf 43 zeigt, also gibt er zurück, dass zwei gleiche pointer existieren
+.br
+auto ptr3 = ptr2; //bei use_count() wird nun 3 ausgegeben, da alle shared Pointer der gleichen Adresse voneinander wissen
+.br
+ptr2.reset(); //ptr2 wird gelöscht, nun sinds nur noch 2
+.br
+int* i = ptr.get();  //ein roher Pointer kriegt den Wert von ptr. use_count() ergibt aber trotzdem 2, weil i roh ist
+.ce
+.NH 3
+Unique Pointer
+.cs
+std::unique_ptr<int> ptr = make_shared<int>(42); //ein Unique Pointer. Er funktioniert fast wie ein shared Pointer
+.br
+auto ptr2 = ptr; //nur ist der gravierende Unterschied, dass er keine Smartpointer neben sich duldet! Diese Zeile wär ein Fehler
+.ce
 .NH
 Kommandozeilargumente
 .cs
@@ -136,6 +181,8 @@ return 0;
 }
 .ce
 Mit "./[programmname] hi" lässt sich das dann aufrufen.
+.br
+Anmerkung: statt argv[] kann man als Funktionsparameter oben auch char **argv verwenden, da Arrays als Funktionsparameter als Pointer vom Compiler behandelt werden. (genauso wie Funktionen als Parameter)
 .NH
 Typedef
 .cs
@@ -260,6 +307,77 @@ Bemerkungen
 .LP
 Bei printf bedeutet %s->string, %d -> Variable, %p -> Pointer, %c -> Character.
 .NH
+Dateien schreiben und lesen
+.LP
+in C
+.cs
+#include <stdio.h>
+.br
+FILE *pF = fopen("lesen.txt","r"); //"r" = read
+.br
+char linebuffer[255]; //maximaler Linebuffer
+.br
+//Durchlesen
+.br
+while(fgets(linebuffer,255,pF)!= NULL) printf("%s",buffer);
+.br
+//gibt Zeilen aus, solange es Zeilen zu lesen gibt. jedes Mal, wenn fgets aufgerufen wird, wird eine weitere Zeile gelesen
+.br
+fclose(pf); //Filepointer wird geschlossen
+.br
+//Ausgabe
+.br
+FILE *pf = fopen("schreiben.txt","w"); //"w" = (Über)schreiben und "a" = anfügen
+.br
+char *string = "nur ein c string\\n";
+.br
+fprintf(pf,string); //bei jedem Aufruf wird eine neue Zeile geschrieben bzw an eine Text angefügt
+.br
+fclose(pf); //schließt den Filepointer wieder
+.ce
+.LP
+in C++
+.cs
+#include <fstream>
+.br
+std::ifstream quelle("speicher.txt");
+.br
+if (!quelle.good()) {  //überprüft, ob es möglich ist die Datei zu öffnen
+.br
+cerr << "Datei konnte nicht geöffnet werden\\n"; return 1;
+.br
+}
+.br
+//Durchlesen
+.br
+while(quelle.good()) { std::string s; quelle >> s; std::cout << s << "\\n"; } //jede Abfrage geht eine Zeile weiter
+.br
+//Ausgabe
+.br
+std::ofstream aus("aus.txt");
+.br
+if (!quelle.good()) {
+.br
+cerr << "Datei konnte nicht geöffnet werden\\n"; return 1;
+.br
+}
+.br
+std::array<std::string,3>t {{ "hi","ein string","noch ein String!" }};
+.br
+while(quelle.good()) { for(auto i : t) aus <<i<<"\\n";} //fügt den Array Zeile für Zeile ein
+.ce
+.NH 2
+Filesystem (nur für C++)
+.cs
+#include <filesystem>
+.br
+std::string path = "/home/notebook";
+.br
+for(const auto& eintrag : std::filesystem::directory_iterator(path)) std::cout << eintrag.path() << std::endl;
+.br
+//gibt jede Datei bzw jeden Ordner im Ordner dieses Pfades aus
+.ce
+.NH
 Compilation
 .LP
 Für C:
@@ -298,6 +416,8 @@ std::cout << millis.count() << std::endl; //gibt in Millisekunden aus
 .NH
 Malloc
 .LP
+Jede manuelle Speicherzuweisung braucht immer ein free() bzw delete, da es sonst zu Memoryleaks kommt, weil C++ diese Zuweisungen nicht rückgängig macht.
+.br
 .TS
 allbox;
 c s s
@@ -452,7 +572,6 @@ quadrat(2);   //   -> ruft int Funktion auf
 .br
 quadrat(2.0); //   -> ruft jedoch double Funktion auf
 .ce
-.ce
 .NH 3
 Lambdas
 .LP
@@ -461,6 +580,49 @@ Aufbau einer Lambda Funktion: [Liste aus Variablen, die aus der Quelldatei impor
 int r = 2; auto wo = [r](int a) -> int {return a*r;}; //wo ist ein Lambda Datentyp
 .br
 wo(3); // Lambda-Funktionsausruf, gibt 6 aus
+.ce
+.NH 2
+Try und catch (nur C++)
+.LP
+Einfach gesagt ist throw dazu da einen Fehler zu übergeben und catch im try-catch-Block sorgt dafür, dass das Programm weiterlaufen kann, aber auf den Fehler eingeht.
+.cs
+float divide(float f1, float f2) {
+.br
+if f2( == 0) throw "Division durch Null!"; //Dieser String wird von catch später aufgefangen
+.br
+else return f1/f2;
+.br
+}
+.br
+try { divide(2.0/0); }
+.br
+catch(std::string err) { std::cerr << err << std::endl; } //Fehler wird ausgegeben
+.ce
+.NH
+Templates (nur C++)
+.LP
+Templates machen es möglich, dass Funktionen mit verschiedenen Datentypen verwendet werden können.
+.cs
+template<typename T>
+.br
+bool kleiner(const T& a, const T& b) { //Funktion ist für jede Parameterart gültig
+.br
+return a < b;
+.br
+}
+.ce
+.LP
+Wenn man vermeiden will, dass die Funktion für bestimmte Datentypen verfügbar ist, überlädt man die Templatefunktion.
+.cs
+template<bool>
+.br
+bool kleiner(bool a, bool b) {
+.br
+static_assert(false, "sinnloser bool-Vergleich"); //gibt Fehlermeldung
+.br
+return 0;
+.br
+}
 .ce
 .NH
 Zusammengesetzte Datentypen
@@ -501,7 +663,9 @@ Strings
 .LP
 Achtung: Bei der Definition von Strings sollte man aufpassen: string x = "s" ist ein richtig definierter String. string x = 's' wäre jedoch ein string, dem ein Char zugewiesen wird!
 .br
-C-Strings werden mit '\\0’ beendet.
+C-Strings werden mit '\\0’ beendet und funktionieren wie C-Arrays, da sie eigentlich Char-Arrays sind.
+.br
+C++-Strings können mit insert und erase bearbeitet werden. (ähnlich wie ein Vector)
 .TS
 allbox;
 c s s
@@ -529,3 +693,168 @@ find -> gibt Iterator aus, wo erstmals der regul. Ausruck auftaucht
 strstr -> gibt Char pointer zum Anfang vom gefundenen w2 in w1 zurück
 .br
 substr ->  bei nur einem Argument gehts bis zum Ende durch
+.NH
+Structs
+.LP
+Structs sind C's Art Objekte bzw eigene Datentypen zu erzeugen (structs haben jedoch keine Methoden). Der Unterschied zwischen C's Structs und C++'s structs ist, dass die structs von C++ die Möglichkeit haben, mit Konstruktoren ininitialisiert zu werden. Des Weiteren muss man in C++ structs nicht mit struct initialisieren, was in C nur in Kombination mit typedef geht.
+.br
+In C++ kann man structs übrigens auch einen Destruktor mit ~[Structname]() {} geben.
+.cs
+struct character {     //für typedef: typedef struct { char* name; }character;
+.br
+char* name;
+.br
+character(char* a) : name(a) { [...] }; //Der Konstruktor geht nur in C++, in C ist das ein Fehler
+.br
+}
+.br
+struct character roboter;   //in C++ geht auch character roboter;
+.br
+struct *character rpointer = &roboter;  //in C++ geht auch nur *character rpointer = &roboter;
+.br
+rpointer->name = "R2-D2";  //das selbe wie (*rpointer).name = "R2-D2";
+.br
+//in C++ kann man das alles auch mit dem Konstruktor verkürzen
+.br
+character roboter("R2-D2");
+.br
+//in C und C++ kann man auch Arrays mit struct erzeugen
+.br
+struct character roboter[];
+.ce
+.NH 2
+Unions
+.LP
+Unions sind eigentlich wie Structs, nur können sie lediglich eine einzige Variable gleichzeitig haben.
+.cs
+union character {     //für typedef: typedef union { char* name; }character;
+.br
+char* name; int version;
+.br
+character(char* a) : name(a) { [...] }; //Der Konstruktor geht nur in C++, in C ist das ein Fehler
+.br
+}
+.br
+union character roboter;   //in C++ geht auch character roboter;
+.br
+union *character rpointer = &roboter;  //in C++ geht auch nur *character rpointer = &roboter;
+.br
+rpointer->name = "R2-D2";  //das selbe wie (*rpointer).name = "R2-D2";
+.br
+rpointer->version = 4; //nun ist der Name weg
+.br
+//in C++ kann man das alles auch mit dem Konstruktor verkürzen
+.br
+character roboter("R2-D2"); //oder character(roboter(4);
+.br
+//in C und C++ kann man auch Arrays mit unions erzeugen
+.br
+union character roboter[];
+.ce
+.NH 3
+Structs und unions zusammen verwenden
+.LP
+Unions kann man dazu verwenden, dass nur bestimmte Variablen besetzt werden und andere nicht, um Platz im Speicher zu sparen.
+.cs
+struct character {
+.br
+char *name;
+.br
+union { char *system; int alter; }
+.br
+}
+struct character han_solo;
+.br
+han_solo.name = "Han Solo"; han_solo.alter = 28;
+.br
+struct character r2d2;
+.br
+r2d2.name = "R2.D2"; r2d2.system = "System 73";
+.ce
+.NH
+Vector (nur C++)
+.LP
+Ist wie ein Array, nur kann der Vector in seiner Laufzeit auf dem Memorystack vergrößert oder verkleinert werden. Der Zugriff funktioniert beim Vector genauso wie beim Array. liste[3] = 2; oder liste.at(3) = 2;
+.cs
+#include <vector>
+.br
+std::vector<int> liste {1,2,3};
+.br
+liste.push_back(4); // liste = {1,2,3,4}
+.br
+liste.insert(liste.begin(),0); // liste = {0,1,2,3,4}
+.br
+liste.erase(liste.begin()+2); //liste = {0,1,3,4}
+.br
+liste.pop_back(); //liste = {0,1,3}
+.ce
+.NH
+Maps (nur in C++)
+.LP
+Maps ordnen einem Schlüssel bzw einem Eingabewert einen Ausgabewert zu. Des Weiteren sind sie auch sortiert.
+.cs
+#include <map>
+.br
+map<char, int>karte { {'a',2}, {'c', 5} };
+.br
+karte.insert(make_pair('b',3));
+.br
+karte['r'] = 6;   //einfacherer Insert, der bei bestehenden Einträgen zum Update führt
+.br
+std::cout << karte'a'] << std::endl; //Zugriff
+.br
+karte.erase('r'); //löscht Eintrag für 'r'
+.br
+karte.clear();  //löscht alles in der Karte
+.br
+karte.empty()   //gibt true aus, wenn die Karte leer ist
+.ce
+.NH 2
+unsortierte Map
+.LP
+Die unsortierte Map ist eine Hashmap. Alle ihre Schlüssel werden mit einem Hash berechnet. Außerdem ist sie unsortiert, wie der Name auch schon sagt. Sie kann im Gegensatz zu einer map schneller sein, da ihre Einträge unsortiert sind.
+.cs
+unordered_map<char, int> hash_map { {'a',2 }, {'c',5} };
+.ce
+.LP
+Ihr Zugriff auf sie funktioniert genauso wie bei einer normalen Map.
+.NH
+Programmierkonzepte
+.NH 2
+Memory/Speicher
+.LP
+Der Speicher ist das, was der Computer braucht, um Daten für eine gewisse Zeit im Arbeitsspeicher (RAM = Random Access Memory) zu speichern.
+.NH 2
+Cache
+.LP
+Dies sind die Daten, die die CPU später häufiger verwenden will, diese sind in der static RAM (SRAM) gespeichert bzw teilweise in der CPU.
+.NH 2
+Buffer/bzw zu Deutsch Puffer
+.LP
+Teil des Arbeitsspeichers, der benutzt wird, um von der CPU schnell Daten abzuspeichern und wieder einzulesen.
+.NH 2
+CPU
+.LP
+CPU (Central Processing Unit) bzw zu Deutsch der Prozessor macht alle Rechenoperationen des Rechners und kommuniziert dabei mit dem Halbleiterspeicher (RAM) über die schenelle Datenleitung BUS.
+.NH 2
+Stack
+.LP
+Speicherungskonzept der Informatik, bei dem Daten auf einen Stapel gelegt werden und nach LiFo (Last in First out) abgearbeitet werden.
+.NH 2
+Heap
+.LP
+Der Heap bzw Haufen kann nach beliebger Reihenfolge erweitert werden und ist der größere Teil des Speichers. LiFo gilt nicht wegen des wahlfreien Zugriffs des Heaps.
+.NH 2
+Array
+.LP
+Bzw zu Deutsch Feld, ist eine Datenstruktur, bei der jedes Element nach seiner Speicheradresse benachbart ist und dessen endgültige Größe schon bei der Initialisierung endgültig ist, damit diese Speicheradressen auch schon vorreserviert sein können.
+.NH 2
+Dynamischer Array
+.LP
+Es ist ein Array, der wenn er mehr Platz benötigt, sich einen neuen größeren Array erzeugt und seinen Inhalt dort hineinkopiert.
+.NH 2
+Verkettete Liste
+.LP
+Eine Datenstruktur, bei der jedes Element einen Zeiger auf das nächste Element enthält. -> dies ist die einseitige Kette bzw Linked list
+.br
+Die doppelt verkettete Liste funktioniert nach dem Prinzip, dass jedes Element, welches weder das erste noch das letzte Element ist, einen Zeiger zum Vorgänger und Nachfolger enthält.
