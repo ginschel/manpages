@@ -442,6 +442,8 @@ system("htop"); //ruft über die Kommandozeile des Betriebssystems htop auf
 .NH 2
 Bemerkungen
 .LP
+int * var = malloc(sizeof(int)*300); bzw int* var = new int[300]; -> der Pointer var ist auf dem Stack, weist aber auf einen zugewiesenen Speicherplatz auf dem Heap, welcher nicht wie der Stack später automatisch freigemacht wird.
+.br
 new -> ist eher für Objekte gedacht. Der pointer funktioniert nach der Datentypszuweisung wie der neue Datentyp und nicht wie ein Pointer. (Es ist auch möglich Arrays damit zu erzeugen)
 .br
 calloc -> erzeugt im Gegensatz zu malloc einen Speicherpointer, der nur Nuller enthalten darf
@@ -819,6 +821,95 @@ unordered_map<char, int> hash_map { {'a',2 }, {'c',5} };
 .LP
 Ihr Zugriff auf sie funktioniert genauso wie bei einer normalen Map.
 .NH
+Softwaretests mit assert und static_assert
+.LP
+Mit assert kann man bei der Laufzeit eines Programmes feststellen, ob eine Bedingung erfüllt ist. Sofern diese nicht erfüllt ist, beendet sich das Programm und es kommt zur Fehlermeldung. static_assert macht so ziemlich das selbe, jedoch nur zur Compilierzeit und verhindert die Compilierung, sofern die Bediningung nicht eintrifft. static_assert ist nur Teil von C++.
+.cs
+#include <assert.h>
+.br
+assert(a == b); //ist a nicht gleich b, wird das Programm beendet
+.br
+std::static_assert(a == b,"A ist ungleich B"); //ist a nicht gleich b, geht die Kompilierung schief
+.ce
+.NH
+Klassen (nur in C++)
+.LP
+Klassen sind structs ziemlich ähnlich. Der einzige Unterschied ist, dass man mit ihnen Daten kapseln kann und ihnen Methoden geben kann. Wie auch, dass man sie von anderen Klassen erben lassen kann und somit ihnen die Methoden und Variablen anderer Klassen übergibt, die sie jedoch für sich überschreiben können.
+.cs
+class Mensch{
+.br
+public:
+.br
+	void hallo() { std::cout << "Hallo\\n"; }
+.br
+};
+.br
+class Hans : public Mensch {   //erbt von der Klasse Mensch
+.br
+public:
+	std::string nachname;
+	Hans(std::string n) : nachname(n) { //bzw this->nachname = n;
+.br
+	}
+.br
+	std::string getnachname() { return nachname; } //ohne this-> geht auch
+.br
+	~Hans() { std::cout << "Ade, schöne Welt\\n";  } //Destruktor
+.br
+private:
+.br
+	std::string versicherungsnummer; //Privat! Darauf hat man keinen Zugriff
+.br
+};
+.br
+Hans derHans("Meier");
+.br
+derHans.getnachname(); //gibt nachname zurück
+.br
+derHans.hallo(); //gibt die geerbte Methode von Mensch zurück
+.ce
+.NH 2
+Polymorphie
+.LP
+Klassen sind polymorph, wenn sie eine Klasse haben, von welcher sie alle erben. Man nehme als Beispiel es gebe die Klassen Hans, Klaus und Erwin. Alle drei erben von der Klasse Mensch, somit kann man einen Array aus ihnen erzeugen, der den Datentyp Mensch hat: Mensch menschen[] = { Hans, Klaus, Erwin };
+.NH 2
+Operatorenüberladung
+.LP
+In C++ ist es möglich die Operatoren von Klassen zu überladen, indem man sie als Methoden der Klasse definiert.
+.cs
+class Hans : public Mensch {   //erbt von der Klasse Mensch
+.br
+public:
+	std::string nachname;
+	Hans(std::string n) : nachname(n) { //bzw this->nachname = n;
+.br
+	}
+.br
+	Hans operator+(const Hans &andererhans) { std::cout << nachname <<" grüßt den " <<
+.br
+andererhans.nachname <<std::endl;
+.br
+Hans unwichtig("hi"); return unwichtig; //Die Operatormethode erfordert einen Rückgabewert
+.br
+} // + wird überladen
+.br
+	std::string getnachname() { return nachname; } //ohne this-> geht auch
+.br
+	~Hans() { std::cout << "Ade, schöne Welt\\n";  } //Destruktor
+.br
+private:
+.br
+	std::string versicherungsnummer; //Privat! Darauf hat man keinen Zugriff
+.br
+};
+.br
+Hans derHans("Meier");
+.br
+Hans andererHans("Schröder");
+.br
+derHans + andererHans; //Meier grüßt den Schröder und unwichtig wird ausgegeben, aber nicht verwendet
+.ce
+.NH
 Programmierkonzepte
 .NH 2
 Memory/Speicher
@@ -840,10 +931,16 @@ CPU (Central Processing Unit) bzw zu Deutsch der Prozessor macht alle Rechenoper
 Stack
 .LP
 Speicherungskonzept der Informatik, bei dem Daten auf einen Stapel gelegt werden und nach LiFo (Last in First out) abgearbeitet werden.
+.br
+Bzw Teil des Speichers: Er ist typischerweise ein bis zwei Megabyte groß und enthält die Daten, die das Programm speichert und ausliest. Wird der Stack zu groß, kommt es zum Stackoverflow (bspw wenn eine Liste unendlich lang größer wird/bzw ein Array bzw Liste zu groß ist oder das Programm zu viele Operationen auf den Stack legt)
+.br
+Jede Variablen bzw Pointerdefinition oder Funktionsaufruf legt eine Operation auf den Stack, der von dem Prozessor abgearbeitet wird. Wenn man mehr Arbeitsspeicher benötigt, lädt man das benötigte Datenobjekt in den Heap mit malloc oder new, muss diesen aber später selber freimachen.
 .NH 2
 Heap
 .LP
 Der Heap bzw Haufen kann nach beliebger Reihenfolge erweitert werden und ist der größere Teil des Speichers. LiFo gilt nicht wegen des wahlfreien Zugriffs des Heaps.
+.br
+Er ist im Gegensatz zum Stack dynamisch mit malloc oder new erweiterbar, wird aber weil er nicht stackgleich abgearbeitet wird, nicht von selber gelöscht und muss manuell freigemacht werden.
 .NH 2
 Array
 .LP
