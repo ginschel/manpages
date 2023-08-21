@@ -10,17 +10,17 @@
 .TL
 Kurzanleitung zu C/C++
 .NH
-Datentypen
+.XN "Datentypen"
 .LP
 int, float, bool, char, size_t, double. Diese können signed, unsigned, short, long und const sein. unsigned int ist das selbe wie size_t. (size_t muss jedoch mit stddef.h oder cstddef inkludiert werden. Bei letzterem ist std::size_t von Nöten.)
 .NH
-Präprozessor
+.XN Präprozessor
 .LP
 Der C/C++ Compiler inkludiert erst die deklarierten Header Files und compiliert danach die einzelnen cpp Programme und übersetzt die als Objektdateien .o, um sie im Linker mit den benötigten Bibliotheken zu verbinden und aus ihnen das ausführbare Programm zu erstellen.
 .sp
 header.h -> #include/Praprozessor-Anweisung -> main.c/cpp -> Compiler -> main.o -> Linker (verknüpft mit Bibliothek) -> main.exe (oder main auf Linux)
 .NH
-Präprozessor-Anweisungen
+.XN Präprozessor-Anweisungen
 .cs
 #ifndef HEADER_H
 .br
@@ -32,14 +32,14 @@ void foo(int c);
 .ce
 Diese im Header deklarierte Funktion kann später in mehreren Quelldateien mit #include "header.h" inkludiert werden (C's bzw C++'s eigene Header werden mit < > eingerahmt statt mit zwei Anführungszeichen). Die Funktion muss nur in einer Quelldatei definiert werden, da der Linker am Ende eh den Code in einer Datei zusammenfasst.
 .NH 2
-Globale Konstanten und Variablen
+.XN Globale Konstanten und Variablen
 .LP
 In Header Dateien werden Variablen ganz normal definiert, in der Quelldatei muss die Variable aber mit extern [datentyp] [variablenname]; deklariert werden.
 .LP
 Konstanten werden mit constexpr const [datentyp] [Konstantenname] = [Wert]; in der Header Datei definiert und mit extern const [datentyp] [Konstantenname]; in der Quelldatei deklariert und importiert. constexpr gibt es aber nur in C++, extern funktioniert aber in C wie auch C++.
 Der Sinn von constexpr ist eine Konstante zu haben, die wirklich nicht geändert werden kann, im Gegensatz zu einer const. Dies sorgt dafür, dass der Compiler schon beim Compilieren weiß, dass sich diese Konstante auch nicht ändern wird. Es funktioniert auch als Sicherung.
 .NH 2
-Lokale Variablen und Funktionen
+.XN Lokale Variablen und Funktionen
 .cs
 static int x = 2; //die Variable ist lokal und kann nur in ihrer Funktion bzw Quelldatei verwendet werden.
 .br
@@ -50,7 +50,7 @@ Des Weiteren behält x seinen Wert bei, auch nachdem man ihren Block verlassen h
 .LP
 Das Gegenteil von static ist auto, was der Compiler standardmäßig jeder Variable zuordnet. Wenn der Funktionsblock verlassen wird, wird auch der Wert von auto x = 2; gelöscht.
 .NH 2
-Makro Definition
+.XN Makro Definition
 .LP
 Makros sind die wahren Konstanten, die nicht geändert werden können, denn const Variablen sind nur begrenzt schreibgeschützt und können je nach Compiler mit Pointern geändert werden.
 .cs
@@ -59,7 +59,7 @@ Makros sind die wahren Konstanten, die nicht geändert werden können, denn cons
 float x = pi;
 .ce
 .NH
-Namespaces
+.XN Namespaces
 .LP
 Man kann verschiedene Funktionen in C++ mit dem selben Namen haben, mann sollte diese aber dann in einen Namespace eintragen, um Konflikte mit anderen Funktionen zu vermeiden. Man deklariert einfach die Funktion innerhalb eines Namespaces und greift auf sie später mit dem selbst gewählten Namespace zu.
 .cs
@@ -74,13 +74,13 @@ foo::foof(); //Zugrif auf foof aus foo namespace
 using namespace std; //importiert std
 .ce
 .NH
-Kommentare
+.XN Kommentare
 .LP
 //   -> kommentiert den Rest einer Zeile
 .br
 /*      */  -> alles, was zwischen /* und */ steht, wird herauskommentiert.
 .NH
-Casting
+.XN Casting
 .LP
 .TS
 allbox;
@@ -92,7 +92,7 @@ Erklärung	C	C++
 Konvertierung zu int	(int) preis;	static_cast<int>(preis);
 .TE
 .NH
-Binäroperationen
+.XN Binäroperationen
 .LP
 AND: 4 & 2 -> 0100 & 0010 -> 0000 -> 0
 .br
@@ -106,13 +106,13 @@ Linksverschiebung(Verdopplung): << 2  -> <<0010  -> 0100 -> 4
 .br
 Rechtsverschiebung(Halbierung): >> 2  -> >>0010  -> 0001 -> 1
 .NH
-Modulo
+.XN Modulo
 .LP
 4 % 2 = 0 -> die Zahl ist rund
 .br
 3 % 2 = 1 -> die Zahl ist ungerade
 .NH
-Pointer
+.XN Pointer
 .LP
 .cs
 int *p = &a; //Pointer p zur Adresse von int a
@@ -168,7 +168,7 @@ std::unique_ptr<int> ptr = make_shared<int>(42); //ein Unique Pointer. Er funkti
 auto ptr2 = ptr; //nur ist der gravierende Unterschied, dass er keine Smartpointer neben sich duldet! Diese Zeile wär ein Fehler
 .ce
 .NH
-Kommandozeilargumente
+.XN Kommandozeilargumente
 .cs
 #include <stdio.h>
 .br
@@ -184,7 +184,7 @@ Mit "./[programmname] hi" lässt sich das dann aufrufen.
 .br
 Anmerkung: statt argv[] kann man als Funktionsparameter oben auch char **argv verwenden, da Arrays als Funktionsparameter als Pointer vom Compiler behandelt werden. (genauso wie Funktionen als Parameter)
 .NH
-Typedef
+.XN Typedef
 .cs
 typedef [datentyp] [neuerdatentypsname];
 .br
@@ -197,7 +197,7 @@ typedef [datentyp] [name][4]; //geht auch für arrays (oder auch pointer)
 typedef struct [datentyp] {} [alias]; //und structs
 .ce
 .NH 2
-Alias mit using
+.XN Alias mit using
 .LP
 In C++ gibt es die Möglichkeit nicht nur mit typedef einen Alias für einen Datentyp zu definieren, sondern auch mit using.
 .cs
@@ -206,7 +206,7 @@ using [alias] = [datentyp];
 [alias] foo = 2;
 .ce
 .NH
-Enums/Aufzählungen
+.XN Enums/Aufzählungen
 .LP
 Enummerations/Aufzählungen bzw enums sind selbst geschriebene Datentypen, dessen Werte programmintern nur eine Aufzählung der Werte in ihrer Reihenfolge darstellt.
 .cs
@@ -229,7 +229,7 @@ enum class Raumschiff { sternjaeger, transportschiff };
 Raumschiff raumschifftyp = Raumschiff::transportschiff;
 .ce
 .NH
-Random
+.XN Random
 .cs
 #in C
 .br
@@ -252,7 +252,7 @@ std::uniform_int_distribution<int> verteilung(0,1000); //erzwingt die Verteilung
 int zufallszahl = verteilung(rd); //generiert Zahl von 0 bis 1000
 .ce
 .NH
-Goto
+.XN Goto
 .cs
 for(int i = 0; i < 20; i++) {
 .br
@@ -267,7 +267,7 @@ if(i == 4 && s == 48) goto Labelname; //ist sehr praktisch, um schnell und einfa
 Labelname:                                                                           //springt direkt in diese Zeile und beendet die Schleifen
 .ce
 .NH
-Input und Output
+.XN Input und Output
 .cs
 #in C
 .br
@@ -303,11 +303,11 @@ return 0;
 }
 .ce
 .NH 2
-Bemerkungen
+.XN Bemerkungen
 .LP
 Bei printf bedeutet %s->string, %d -> Variable, %p -> Pointer, %c -> Character.
 .NH
-Dateien schreiben und lesen
+.XN Dateien schreiben und lesen
 .LP
 in C
 .cs
@@ -367,7 +367,7 @@ std::array<std::string,3>t {{ "hi","ein string","noch ein String!" }};
 while(quelle.good()) { for(auto i : t) aus <<i<<"\\n";} //fügt den Array Zeile für Zeile ein
 .ce
 .NH 2
-Filesystem (nur für C++)
+.XN Filesystem (nur für C++)
 .cs
 #include <filesystem>
 .br
@@ -377,8 +377,15 @@ for(const auto& eintrag : std::filesystem::directory_iterator(path)) std::cout <
 .br
 //gibt jede Datei bzw jeden Ordner im Ordner dieses Pfades aus
 .ce
+.NH 3
+.XN Ordnererstellung
+.cs
+#include <filesystem>
+.br
+std::filesystem::create_directories("neuer_ordner");
+.ce
 .NH
-Compilation
+.XN Compilation
 .LP
 Für C:
 .cs
@@ -391,7 +398,7 @@ Für C++:
 g++ [C-Datei].c -o [programmname] && ./[programmname]
 .ce
 .NH
-Chrono
+.XN Chrono
 .LP
 Dies gilt nur für C++. In C gibt es keine C eigene Methode Zeitintervalle zu messen.
 .cs
@@ -414,7 +421,7 @@ auto millis = std::chrono::duration:cast<std::chrono::milliseconds>(vergangen); 
 std::cout << millis.count() << std::endl; //gibt in Millisekunden aus
 .ce
 .NH
-Malloc
+.XN Malloc
 .LP
 Jede manuelle Speicherzuweisung braucht immer ein free() bzw delete, da es sonst zu Memoryleaks kommt, weil C++ diese Zuweisungen nicht rückgängig macht.
 .br
@@ -433,14 +440,14 @@ Speicherkapazitätsänderung	(char*) realloc(s,2*sizeof(char));	arrayzeiger = ne
 Speicher löschen	free(s);	delete p;
 .TE
 .NH
-Systembefehle
+.XN Systembefehle
 .LP
 Dies geht in C wie auch C++. In C++ kann man jedoch auch std::system benutzen.
 .cs
 system("htop"); //ruft über die Kommandozeile des Betriebssystems htop auf
 .ce
 .NH 2
-Bemerkungen
+.XN Bemerkungen
 .LP
 int * var = malloc(sizeof(int)*300); bzw int* var = new int[300]; -> der Pointer var ist auf dem Stack, weist aber auf einen zugewiesenen Speicherplatz auf dem Heap, welcher nicht wie der Stack später automatisch freigemacht wird.
 .br
@@ -452,7 +459,7 @@ memcpy -> fügt direkt in den neuen Speicherpointer ein, keine Zuweisung ist erf
 .br
 realloc -> vereint in sich malloc, memcpy und free in einem
 .NH
-Grundlegende Programmstrukturen
+.XN Grundlegende Programmstrukturen
 .NH 2
 if
 .cs
@@ -538,7 +545,7 @@ return [int-Wert]; // [datentyp] wird zurückgegeben (void braucht das nicht)
 foo(5); // Funktionsaufruf
 .ce
 .NH 3
-Funktionspointer
+.XN Funktionspointer
 .cs
 int add(int n, int m) { return n+m; } //Funktionsdefinition
 .br
@@ -601,7 +608,7 @@ try { divide(2.0/0); }
 catch(std::string err) { std::cerr << err << std::endl; } //Fehler wird ausgegeben
 .ce
 .NH
-Templates (nur C++)
+.XN Templates (nur C++)
 .LP
 Templates machen es möglich, dass Funktionen mit verschiedenen Datentypen verwendet werden können.
 .cs
@@ -627,7 +634,7 @@ return 0;
 }
 .ce
 .NH
-Zusammengesetzte Datentypen
+.XN Zusammengesetzte Datentypen
 .NH 2
 Arrays
 .LP
@@ -661,7 +668,7 @@ Bemerkungen
 std::equal -> std::equal(std::begin(feld1), std::end(feld1), std::begin(feld2)) (benötigt <algorithm> und <iterator>)
 memcmp -> (gibt, wenn sie gleich sind, 1 aus)
 .NH
-Strings
+.XN Strings
 .LP
 Achtung: Bei der Definition von Strings sollte man aufpassen: string x = "s" ist ein richtig definierter String. string x = 's' wäre jedoch ein string, dem ein Char zugewiesen wird!
 .br
@@ -696,7 +703,7 @@ strstr -> gibt Char pointer zum Anfang vom gefundenen w2 in w1 zurück
 .br
 substr ->  bei nur einem Argument gehts bis zum Ende durch
 .NH
-Structs
+.XN Structs
 .LP
 Structs sind C's Art Objekte bzw eigene Datentypen zu erzeugen (structs haben jedoch keine Methoden). Der Unterschied zwischen C's Structs und C++'s structs ist, dass die structs von C++ die Möglichkeit haben, mit Konstruktoren ininitialisiert zu werden. Des Weiteren muss man in C++ structs nicht mit struct initialisieren, was in C nur in Kombination mit typedef geht.
 .br
@@ -725,7 +732,7 @@ character roboter("R2-D2");
 struct character roboter[];
 .ce
 .NH 2
-Unions
+.XN Unions
 .LP
 Unions sind eigentlich wie Structs, nur können sie lediglich eine einzige Variable gleichzeitig haben.
 .cs
@@ -774,7 +781,7 @@ struct character r2d2;
 r2d2.name = "R2.D2"; r2d2.system = "System 73";
 .ce
 .NH
-Vector (nur C++)
+.XN Vector (nur C++)
 .LP
 Ist wie ein Array, nur kann der Vector in seiner Laufzeit auf dem Memorystack vergrößert oder verkleinert werden. Der Zugriff funktioniert beim Vector genauso wie beim Array. liste[3] = 2; oder liste.at(3) = 2;
 .cs
@@ -791,7 +798,7 @@ liste.erase(liste.begin()+2); //liste = {0,1,3,4}
 liste.pop_back(); //liste = {0,1,3}
 .ce
 .NH
-Maps (nur in C++)
+.XN Maps (nur in C++)
 .LP
 Maps ordnen einem Schlüssel bzw einem Eingabewert einen Ausgabewert zu. Des Weiteren sind sie auch sortiert.
 .cs
@@ -812,7 +819,7 @@ karte.clear();  //löscht alles in der Karte
 karte.empty()   //gibt true aus, wenn die Karte leer ist
 .ce
 .NH 2
-unsortierte Map
+.XN unsortierte Map
 .LP
 Die unsortierte Map ist eine Hashmap. Alle ihre Schlüssel werden mit einem Hash berechnet. Außerdem ist sie unsortiert, wie der Name auch schon sagt. Sie kann im Gegensatz zu einer map schneller sein, da ihre Einträge unsortiert sind.
 .cs
@@ -832,7 +839,7 @@ assert(a == b); //ist a nicht gleich b, wird das Programm beendet
 std::static_assert(a == b,"A ist ungleich B"); //ist a nicht gleich b, geht die Kompilierung schief
 .ce
 .NH
-Klassen (nur in C++)
+.XN Klassen (nur in C++)
 .LP
 Klassen sind structs ziemlich ähnlich. Der einzige Unterschied ist, dass man mit ihnen Daten kapseln kann und ihnen Methoden geben kann. Wie auch, dass man sie von anderen Klassen erben lassen kann und somit ihnen die Methoden und Variablen anderer Klassen übergibt, die sie jedoch für sich überschreiben können.
 .cs
@@ -869,11 +876,11 @@ derHans.getnachname(); //gibt nachname zurück
 derHans.hallo(); //gibt die geerbte Methode von Mensch zurück
 .ce
 .NH 2
-Polymorphie
+.XN Polymorphie
 .LP
 Klassen sind polymorph, wenn sie eine Klasse haben, von welcher sie alle erben. Man nehme als Beispiel es gebe die Klassen Hans, Klaus und Erwin. Alle drei erben von der Klasse Mensch, somit kann man einen Array aus ihnen erzeugen, der den Datentyp Mensch hat: Mensch menschen[] = { Hans, Klaus, Erwin };
 .NH 2
-Operatorenüberladung
+.XN Operatorenüberladung
 .LP
 In C++ ist es möglich die Operatoren von Klassen zu überladen, indem man sie als Methoden der Klasse definiert.
 .cs
@@ -910,7 +917,170 @@ Hans andererHans("Schröder");
 derHans + andererHans; //Meier grüßt den Schröder und unwichtig wird ausgegeben, aber nicht verwendet
 .ce
 .NH
-Programmierkonzepte
+.XN Multithreading
+.NH 2
+.XN Threading in C
+.cs
+(muss mit -pthread kompiliert werden, um auf POSIX zu laufen)
+.sp
+#include <pthread.h>
+.br
+#include <stdio.h>
+.br
+#include <unistd.h> //für sleep()
+.br
+void *threadarbeit(void *tid) {   //Threadfunktion mit Thread-id
+.br
+long id = (long)tid;  //cast zurück zum Integer
+.br
+sleep(1);
+.br
+printf("Es wird am Thread %ld gearbeitet\\n",id);
+.br
+pthread_exit(NULL);
+.br
+}
+.sp
+int main() {
+.br
+pthread_t thread[3]; //Threadanzahl
+.br
+for(long i = 0; i < 3; i++) {
+.br
+printf("Thread %ld wird gestartet\\n",i);
+.br
+pthread_create(&thread[i], NULL, threadarbeit, (void *)i);
+.br
+pthread_join(thread[i],NULL);
+.br
+}
+.br
+}
+.ce
+.NH 2
+.XN Threading in C++
+.cs
+(muss mit -pthread kompiliert werden, um auf POSIX zu laufen)
+.sp
+#include <iostream>
+.br
+#include <thread>
+.br
+#include <mutex>
+.br
+int var = 1;
+.br
+void add(int a) {
+.br
+static std::mutex mtx;  //Threads müssen gelockt sein, damit das Betriebssystem den Thread nicht vorläufig beendet, um den nächsten Thread zu starten
+.br
+mtx.lock();   //bzw std::lock_guard<std::mutex> lock(mtx);, wenn man kb auf unlock hat
+.br
+var+=a;
+.br
+mtx.unlock();  //wichtig
+.br
+}
+.sp
+int main() {
+.br
+std::thread t([]() {
+.br
+std::cout << "Hi" << std::endl;
+.br
+});
+.br
+t.join(); //jeder Thread muss am Ende dem Mainthread gejoint werden, sonst gibts Fehler
+.br
+std::thread t1(add, 43);
+.br
+t1.join();
+.br
+std::thread t2(add, 143);
+.br
+t2.join();
+.br
+std::cout << var << std::endl;
+.br
+return 0;
+.br
+}
+.ce
+.NH 2
+.XN Async (nur für C++)
+.cs
+(braucht wieder pthreads... Außerdem funktioniert Async etwas anders als herkömmliche Threads, da sie ihre Ergebnisse auch erst dann fertig berechnet haben müssen, wenn man mit get() nach dem Return fragt. Somit kann man ziemlich leicht Berechnungen semiparallel zum Mainthread ausführen lassen.
+.sp
+#include <iostream>
+.br
+#include <future>
+.sp
+int main() {
+.br
+std::future futur = std::async([]() { return 4+5;}); //Der Prozess darf auch erst beendet werden
+.br
+std::cout << futur.get() << std::endl;  //, wenn nach dem Ergebnis gefragt wird
+.br
+return 0;
+.br
+}
+.ce
+.NH
+.XN Restliche std library für C++
+.NH 2
+.XN sort
+.cs
+#include <algorithm>
+.br
+#include <vector>
+.br
+#include <iostream>
+.sp
+int main() {
+.br
+std::vector<int> vec {1,4,3,6,8,2,4};
+.br
+std::sort(vec.begin(),vec.end());  //sort(Objekts-Anfangsiterator,Objekts-Enditerator);
+.br
+for(int i : vec) std::cout << i << std::endl;
+.br
+}
+.ce
+.NH 2
+.XN find
+.cs
+#include <algorithm>
+.br
+#include <vector>
+.br
+#include <iostream>
+.br
+std::vector<int> vec {1,4,3,6,8,2,4};
+.br
+std::vector<int>::iterator iter = std::find(vec.begin(), vec.end(), 8); //auto iter für die Schreibfaulen
+.br
+std::cout << *iter << std::endl;  //wird wie ein Pointer ausgegeben; gibt 8 aus, da der Iterator dorthin zeigt
+.ce
+.NH 3
+find_if
+.cs
+#include <algorithm>
+.br
+#include <vector>
+.br
+#include <iostream>
+.br
+std::vector<int> vec {1,4,3,6,8,2,4};
+.br
+std::vector<int>::iterator iter = std::find_if(vec.begin(), vec.end(), [](int x){return x% 2 ==0;});
+.br
+//iter zeigt auf erste gerade Zahl, die gefunden wird
+.br
+std::cout << *iter << std::endl;  //wird wie ein Pointer ausgegeben; gibt 4 aus, da der Iterator dorthin zeigt
+.ce
+
+.NH
+.XN Programmierkonzepte
 .NH 2
 Memory/Speicher
 .LP
@@ -918,11 +1088,11 @@ Der Speicher ist das, was der Computer braucht, um Daten für eine gewisse Zeit 
 .NH 2
 Cache
 .LP
-Dies sind die Daten, die die CPU später häufiger verwenden will, diese sind in der static RAM (SRAM) gespeichert bzw teilweise in der CPU.
+Teil des Prozessors oder der static RAM (SRAM), der vom Prozessors verwendet wird, um schnell Instruktionen und Daten zu speichern und wieder auszulesen.
 .NH 2
 Buffer/bzw zu Deutsch Puffer
 .LP
-Teil des Arbeitsspeichers, der benutzt wird, um von der CPU schnell Daten abzuspeichern und wieder einzulesen.
+Ein kleiner Speicher, der von als Inputspeicher bei Tastatur und Maus oder als Outputspeicher bei Druckern verwendet wird.
 .NH 2
 CPU
 .LP
@@ -955,3 +1125,8 @@ Verkettete Liste
 Eine Datenstruktur, bei der jedes Element einen Zeiger auf das nächste Element enthält. -> dies ist die einseitige Kette bzw Linked list
 .br
 Die doppelt verkettete Liste funktioniert nach dem Prinzip, dass jedes Element, welches weder das erste noch das letzte Element ist, einen Zeiger zum Vorgänger und Nachfolger enthält.
+.NH 2
+Binary Search
+.LP
+Eine Suche in einem sortierten Array, bei der man stets den Array in der Hälfte zerteilt und überprüft, ob der gesuchte Wert links oder Rechts dieser Mitte sein sollte. Daraufhin nimmt man zur Rekursion stets den Teilarray, der in Frage kommt, bis man einen Teilarray von der Größe eins hat.
+.TC
