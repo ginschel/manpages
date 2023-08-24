@@ -226,7 +226,7 @@ accumulate
 .br
  .R2
 .br
-auf die Referenzen verweist und mit bspw: gfroff -R -k -tb -e -mspdf anleitung.ms > groffanleitung.pdf kompiliert.
+auf die Referenzen verweist und mit bspw: groff -R -k -tb -e -mspdf -T pdf anleitung.ms > groffanleitung.pdf kompiliert.
 .[
 einverweis
 .]
