@@ -162,7 +162,7 @@ $SHELL -> Shell, die grad läuft
 .br
 $PATH -> Eine Liste von Verzeichnissen, in die man scripts einfügen kann, um sie von allen Verzeichnissen zugänglich zu machen
 .br
-export PATH=$PATH:/kompletter/Verzeichnis/Pfad/vom/gewünschten/Ornder //kann man in .profile einfügen, um einen neues Verzeichnis zu der Liste hinzuzufügen
+export PATH=$PATH:/kompletter/Verzeichnis/Pfad/vom/gewünschten/Ordner //kann man in .profile einfügen, um einen neues Verzeichnis zu der Liste hinzuzufügen
 .sp
 Zu Skripten:
 .br
