@@ -32,7 +32,36 @@ pkill -kill -u nutzername -> loggt nutzer aus dem System aus
 .sp
 sudo vim /etc/group -> Konfigurationsdatei aller Gruppen
 .NH
-.XN Systemessentials
+.XN Linuxs Systemordner (ausführlicher in man hier)
+.LP
+/boot/ -> Ordner mit Dateien, damit das Betriebssystem starten kann, und den Kernel
+.br
+/bin/ -> Ordner für Systemprogramme, die von allen Nutzern ausgeführt werden dürfen
+.br
+/sbin/ -> Ordner für Systemprogramme, die nur root User ausführen dürfen
+.br
+/lib/ -> die Bibliothek bzw die Libraries der Systemprogramme
+.br
+/dev/ -> Device (Ordner für Gerätedateien)
+.br
+/usr/ -> Nutzerordner
+.br
+/usr/bin/ -> der Ordner, wo die Programme vom Nutzer gespeichert werden (ähnlich wie ~.local/bin, aber für alle Nutzer)
+.br
+/etc/ -> editable text config (der Konfigurationsordner)
+.br
+/home/ -> der Ordner, wo die Nutzerdaten gespeichert sind
+.br
+/opt/ -> optionale Software/addonsoftware
+.br
+/var/ -> enthält log und cache Dateien
+.br
+/tmp/ -> temporäre Dateien
+.br
+/proc/ -> ist der Ordner mit den Informationen über geraade laufende Prozesse
+
+.NH
+.XN grundlegende Systembefehle
 .LP
 echo "text" -> gibt text in der Terminalausgabe aus
 .br
@@ -88,6 +117,10 @@ pidof prozess -> gibt prozessnummer an
 .br
 ps -e | grep -> listet alle Prozesse aus und pipet in grep, um zu filtern
 .br
+ps aux | grep -> listet alle Prozesse mit korespondierenden Nutzer auf
+.br
+nützliche ps optionen: -ef (ähnlich wie aux) und -au bzw -a
+.br
 kill prozessnummer -> tötet Prozess
 .br
 pkill prozessname -> tötet Prozess, aber diesmal durch Patternmatching
@@ -113,6 +146,12 @@ pacman -Suy programmname //-u=Update, S=install, y=packageupdate; installiert pa
 seq 5 oder seq 200 //zählt bis 5 bzw 200
 .br
 initx bzw startx -> start xorg
+.br
+ln -s ~/script/datei.sh ~/datei.sh //macht Link datei.sh im Heimverzeichnis, der auf das echte Skript verweist
+.br
+which befehl -> gibt aus, in welchem Ordner der Befehl zu finden ist
+.br
+qpdf --empty --pages erste.pdf zweite.pdf ... achte.pdf -- kombinierte.pdf (verbindet beliebige Anzahl von pdfs zu einer)
 .NH 2
 USBs:
 .LP
