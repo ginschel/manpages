@@ -7,6 +7,8 @@ Alexander Ginschel
 .XN Pythoncode starten
 .LP
 Macht man, indem man python ins Terminal eingibt und mit import das Skript importiert oder mit python skriptname das Skript gleich ausführen lässt.
+.br
+Bzw man will einen kurzen Befehl mit python -c ausführen: python -c 'print("hallo_welt")'
 .NH 2
 Pip und Python environments
 .LP
