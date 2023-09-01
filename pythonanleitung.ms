@@ -138,11 +138,13 @@ for item in ls: #foreach loop durch ls
 .LP
 Void-Funktionen erkennt man daran, dass sie am Ende nichts zurückgeben, wohingegen Variablenfunktionen mit return am Ende des Funktionsdurchganges einen Wert zurückgeben.
 .B1
+count
+.br
 def foo(c=4): #wird c im Funktionsaufruf nicht angegeben, ist c gleich 4
 .br
-	c+=1
+	global count; count+=c #Globale Variablen werden in Funktionen mit global gekennzeichnet
 .br
-	return c
+	return count
 .br
 foo(5)
 .B2
