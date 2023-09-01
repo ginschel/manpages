@@ -163,9 +163,9 @@ try:
 .br
 	print("Ausgabe")
 .br
-catch: #wird durchlaufen, wenn try versagt
+except: #wird durchlaufen, wenn try versagt
 .br
-	print("Ein Fehler ist unterlaufen")
+	raise Exception("Ein Fehler ist unterlaufen")
 .B2
 .NH
 .XN Tupel, Set, Dictionary, List
@@ -441,6 +441,8 @@ with open("text") as f: #"r" wird standardmäßig als Parameter genommen
 import os
 .br
 #herausfinden, ob Pfad existiert
+.br
+os.listdir() #gibt Liste aus mit dem Inhalt des momentanen Verzeichnisses
 .br
 os.path.exists("/home/nutzer/datei_oder_ordner")
 .br
@@ -721,5 +723,68 @@ client.connect(('127.0.0.1',80)) # braucht ein Tupel; btw 80 ist der http Port
 msg = "lol"; msg = msg.encode() #encodiert "lol", damit man es per Socket schicken kann
 .br
 client.send(msg)
+.B2
+.NH
+.XN Customtkinter
+.LP
+.B1
+import customtkinter
+
+def lol():
+    username = eingabetext.get() #speichert Nutzernamen
+    print(username)
+    eingabetext.delete(0,"end") #löscht alles in der Eingabe vom Anfang bis Ende
+.br
+customtkinter.set_appearance_mode("dark") #die Configs müssen vorm app-Konstruktor stehen
+.br
+customtkinter.set_default_color_theme("blue")
+.br
+app = customtkinter.CTk()
+.br
+app.title("keckerino") #Fenstername
+.br
+app.geometry("300x200") #fixierte Fenstergröße
+.br
+app.grid_columnconfigure(0, weight=1) #zentriert nur bei einem Gewicht über 0
+.br
+frame = customtkinter.CTkFrame(app) #erstellt Frame auf dem Elemente platziert werden können
+.br
+frame.grid(row=0,column=0, padx=20, pady=60)
+.br
+but = customtkinter.CTkButton(master=frame, text="keck", command=lol)
+.br
+but.grid(row=1,column=2, padx=20, pady=20) #Wird im Raster der Reihe 1, Spalte 2 mit Padding 20 platziert
+.br
+#Grid orientiert sich immer am direkt übergeordneten Element
+.br
+label =customtkinter.CTkLabel(master=frame, text="Login").grid(row=0,column=0, columnspan=2)
+.br
+#columnspan=2 heißt, dass das Label von bis zur Spalte 2 geht
+.br
+eingabetext=customtkinter.CTkEntry(master=frame, placeholder_text="Nutzername")
+.br
+eingabetext.grid(row=1, column=0) #die grid-Funtkion muss seperat angewandt werden
+.br
+print(eingabetext.get()) #get() geht nur, wenn man Entry einzeln initiiert ohne extra Funktion
+.br
+passworteingabe=customtkinter.CTkEntry(master=frame,placeholder_text="Password", show="*").grid(row=1,column=1) #passworteingabe.get() würde nicht funktionieren
+.sp
+#UI-Sachen
+.br
+ausg = 'Eine bloße Ausgabe'
+.br
+text = customtkinter.CTkTextbox(frame, width = 400) #breite von 400px
+.br
+text.grid(row=2, column=0,columnspan=2)
+.br
+text.insert("0.0", ausg)
+.br
+text.insert("end", ausg*3) #fügt am Ende der Textbox dreimal ausg ein
+.br
+print(text.get('1.0', "end")) #gibt Textboxinhalt aus
+.br
+text.delete("0.0","end") #löscht alles
+.br
+app.mainloop() #startet das Fenster
 .B2
 .TC
