@@ -275,9 +275,9 @@ Labelname:                                                                      
 .br
 int main() {
 .br
-int a; scanf(%d,&a); //Wert der Eingabe wird an die Adresse von a geschickt
+int a; scanf(%d,&a); //Wert der Eingabe wird an die Adresse von a als signierte Variable geschickt
 .br
-printf("%d\n",a); //a wird in der Konsole ausgegeben
+printf("%d\\n",a); //a wird in der Konsole ausgegeben
 .br
 return 0;
 .br
@@ -305,7 +305,7 @@ return 0;
 .NH 2
 .XN Bemerkungen
 .LP
-Bei printf bedeutet %s->string, %d -> Variable, %p -> Pointer, %c -> Character.
+Bei printf bedeutet %s->string, %d ->signierte Variable im Dezimalsystem, %i -> Variable, die oktal, hexadezimal, dezimal sein kann, %p -> Pointer, %c -> Character.
 .NH
 .XN Dateien schreiben und lesen
 .LP
@@ -810,7 +810,7 @@ karte.insert(make_pair('b',3));
 .br
 karte['r'] = 6;   //einfacherer Insert, der bei bestehenden Einträgen zum Update führt
 .br
-std::cout << karte'a'] << std::endl; //Zugriff
+std::cout << karte['a'] << std::endl; //Zugriff
 .br
 karte.erase('r'); //löscht Eintrag für 'r'
 .br

@@ -58,7 +58,7 @@ RDI/EDI/DI/DIL -> Ziel-/Destinationindex für Stringoperationen
 .sp
 RIP/EIP/IP -> enthält Adresse des Befehls, der als nächstes ausgeführt werden sollte
 .sp
-R8-R15 -> 64bit Register für alles
+R8 bis R15 -> 64bit Register für alles
 .sp
 CS/DS/SS/ES/FS/GS -> 16bit Segmentregister von den Segmenten Code (.text)/Data (.data)/Stack/Extra/General/General [DS:ip wäre übrigens zb Datasegment:Offset und würde somit eine physikalische Adresse ergeben]
 .sp
@@ -90,15 +90,16 @@ repe cmpsb ->(compare string byte, gibt auch cmpsw) vergleicht die zwei Buffer/S
 .sp
 rep stosb -> (store string byte) überschreibt edi mit dem Wert von AL
 .sp
-rep movsb -Y (move string byte) kopiert esi in edi solange ecx, die Bufferlänge, nicht 0 ist
+rep movsb -> (move string byte) kopiert esi in edi solange ecx, die Bufferlänge, nicht 0 ist
 .sp
-repne scasb (scan string byte) durchsucht den von edi referenzierten Buffer und subrahiert Al solange von dem referenzierten Wert, wie das Ergebnis nicht 0 ist oder ecx, die Bufferlänge, nicht 0 ist
+repne scasb -> (scan string byte) durchsucht den von edi referenzierten Buffer und subrahiert Al solange von dem referenzierten Wert, wie das Ergebnis nicht 0 ist oder ecx, die Bufferlänge, nicht 0 ist
 .sp
 push eax; pop ebx; pusha; pushad; popa; popad -> push und pop sind die normalen Stackbefehle. push, popa machen diese Operationen für 16bit-Werte, wohingegen pushad, popad dies nur für 32bit Werte machen
 .sp
 call 0x41001000 -> Funktionsaufruf, EIP kriegt als Wert den Befehl nach dem Call und wird auf den Stack gepusht
 .sp
 ret -> poppt Stack und springt zur Adresse, wohin der neue Wert zeigtNH
+.NH
 Kompilation (32bit x86-Architektur)
 .LP
 nasm -f elf32 assembler.s -o kompilat.o && ld -m elf_i386 kompilat.o -o programm
@@ -207,7 +208,7 @@ Genz nebenbei: Var im letzten Stringbeispiel ist nichts anderes als ein Pointer,
 .NH 2
 Funktionen
 .LP
-Funktionen realisiert man in Assembler mit einem call Befehl. Dieser puht die Adresse vom direkt nächsten Befehl nach call auf den Stack und sprint zum Label bzw der Instructionpointeradresse, die im gegeben wurde. Zurück springt man mit einem pop eax | jmp eax, insofern der momentane Stackwert noch der Befehlsadresse unter dem call entspricht.
+Funktionen realisiert man in Assembler mit einem call Befehl. Dieser pusht die Adresse vom direkt nächsten Befehl nach call auf den Stack und springt zum Label bzw der Instructionpointeradresse, die ihm gegeben wurde. Zurück springt man mit einem pop eax | jmp eax, insofern der momentane Stackwert noch der Befehlsadresse unter dem call entspricht.
 .br
 pop eax | jmp eax kann man übrigens mit ret abkürzen.
 .NH 3
@@ -236,7 +237,7 @@ ret ; pop eax | jmp eax
 .NH
 Nutzungen von C-Funktionen
 .LP
-Man kann C-Funktionen in Assembler verwende, nur sollte man darauf achten, dass man das Assemblerkompilat am Ende mit gcc zu einem Programm zusammenfasst, damit zu den C-Headern gelinkt wird. -> gcc -m32 kompilat.o -o programm
+Man kann C-Funktionen in Assembler verwenden, nur sollte man darauf achten, dass man das Assemblerkompilat am Ende mit gcc zu einem Programm zusammenfasst, damit zu den C-Headern gelinkt wird. -> gcc -m32 kompilat.o -o programm
 .B1
 global main ; c braucht main Funktion
 .br
@@ -326,6 +327,8 @@ mov eax, byte ptr 5 -> kopiere das byte 5 in das 32bit Register eax (als Lowbyte
 .br
 mov eax,0 ist das selbe wie xor eax, eax nur schneller in der Laufzeit
 .br
+r8 bezeichnet die vollen 64bit des Registers, r8d seine vier Lowbytes, r8w seine zwei Lowbytes und r8b sein Lowbyte
+.br
 Calling conventions
 .br
 cdecl -> Stack für den Functioncall/Funktionsaufruf wird nicht von der Funktion gesäubert, sondern von der aufrufenden Funktion durch beispielsweise ein [esp+18]. Des Weiteren wird der Rückgabewert in eax gespeichert
@@ -333,3 +336,68 @@ cdecl -> Stack für den Functioncall/Funktionsaufruf wird nicht von der Funktion
 stdcall -> wie cdecl nur, dass die aufgerufene Funktion den Stack mit einem leave (was dem Epilog entspricht, den gcc mit leave einfach abkürzt [der Prolog wäre übrigens enter) säubert
 .br
 fastcall -> Windows tendiert dazu, dass Funktionsparameter in ECX, RDX und in R8 gespeichert werden
+.NH
+Syscalls in 64bit Linux
+.LP
+hellos.s (wird mit nasm -f el64 hellos.s -o hellos.o && ld hellos.o -o hellos kompiliert)
+.B1
+global _start ; Hauptfunktion wird für den Linker benannt
+.br
+section .data
+.br
+var db "Var: " ; db = define byte, dw wäre define word und dd define dword
+.br
+len equ $- var ; bestimmt Länge von var
+.br
+section .text
+.br
+_start:
+.br
+	mov [var+6], byte 0x0a ; fügt Zeilenumbruch am Ende des String ein
+.br
+	mov rax, 1 ; bestimmt fürs Betriebssystem bzw Linux, dass ausgegeben wird
+.br
+	mov rdi, 1 ; bestimmt stdoutput
+.br
+	mov rsi, var ; String zum Ausgeben
+.br
+	mov rdx, len ; Stringlänge zur Ausgabe
+.br
+	add rdx, 48 ; 5 nimmt Dezimalwert des Chars 5 an, und kann so ausgegeben werden
+.br
+	mov [var+5], rdx ; An die fünften Stelle von var wird der Wert aus dex reinkopiert
+.br
+	sub rdx, 3 ; rdx ist wieder 5
+.br
+	syscall ; Abschicken der Registerwerte ans Betriebssystem
+.br
+	mov rdx, 4
+.br
+	mov rax, 60 ; Betriebssystem weiß, dass nach syscall das Programm beendet wird
+.br
+	add rdi, rdx ; rdi wird 5, also wird der Fehlercode 5 ausgegeben
+.br
+	syscall ; int heißt interrupt und int 0x80 ruft den 32bit syscall auf
+.B2
+.NH
+Syscalls in C
+.LP
+.B1
+#include <sys/syscall.h> //optional falls man SYS_ Variablen von Linux nutzen will
+.br
+#include <unistd.h> //Headerdatei mit syscall()
+.sp
+int main() {
+.br
+char*s;
+.br
+syscall(0,1,s,7); //liest String s mit Maximallänge 7 us dem Terminal aus (in 32bit wäre eax übrigens 3)
+.br
+syscall(1,1,s,7); //gibt String s ins Terminal aus
+.br
+syscall(60,87); //gibt sys exitcode 60 aus
+.br
+	return 0;
+.br
+}
+.B2
